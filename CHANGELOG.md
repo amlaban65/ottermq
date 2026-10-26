@@ -79,6 +79,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `queue.declare-ok` always reported 0 consumers, for a new queue and for a redeclare (passive
   or not) of a queue with consumers. It now reports the queue's active consumer count, as
   RabbitMQ does, so a passive declare shows whether anything consumes from the queue (#335).
+- Reject AMQP short strings longer than 255 bytes and propagate encoding errors instead of
+  wrapping the length byte and emitting a corrupted frame. Informational channel/connection
+  close texts are truncated at a UTF-8 boundary, so long valid queue names still receive a
+  channel error without losing the connection (#181).
 - `basic.cancel` requeued the consumer's unacked messages, so they were delivered again, and
   acking them afterwards closed the channel with 406 PRECONDITION_FAILED (unknown delivery tag).
   The cancel now only stops new deliveries, as in AMQP and RabbitMQ: messages already delivered
